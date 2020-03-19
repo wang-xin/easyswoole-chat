@@ -1,0 +1,36 @@
+version: '3.4'
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app:/var/www/html
+      - ./conf/nginx/conf.d/:/etc/nginx/conf.d/:ro
+    restart: always
+  php:
+    build: .
+    ports:
+      - "9501:9501"
+    volumes:
+      - ./app:/easyswoole
+    links:
+      - mysql
+      - redis
+    restart: always
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    ports:
+      - "33060:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    restart: always
+  redis:
+    image: redis:latest
+    ports:
+      - "63790:6379"
+    volumes:
+      - ./data/redis:/data
+    restart: always
