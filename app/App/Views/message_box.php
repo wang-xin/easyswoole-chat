@@ -79,7 +79,7 @@
         <?php if ($v['type'] == 0): ?>
             <li data-uid="<?= $this->e($v['uid']) ?>" data-fromgroup="<?= $this->e($v['group_id']) ?>">
                 <a href="javascript:;">
-                    <img style="width: 40px;height: 40px" src="/<?= $this->e($v['avatar']) ?>"
+                    <img style="width: 40px;height: 40px" src="<?= $this->e($v['avatar']) ?>"
                          class="layui-circle layim-msgbox-avatar"></a>
                 <p class="layim-msgbox-user">
                     <a href="javascript:;"><?= $this->e($v['nickname']) ?></a>
@@ -158,7 +158,7 @@
                 $.ajax({
                     url: "/User/addFriend",
                     type: "post",
-                    data: {id: id, groupid: group, token: storage.getItem('token')},
+                    data: {id: id, group_id: group, token: storage.getItem('token')},
                     dataType: "json",
                     success: function (res) {
                         console.log(res)
