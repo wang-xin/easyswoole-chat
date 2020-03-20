@@ -27,7 +27,7 @@ class WebSocketEvents
 
         $user = json_decode($user, true);
         if (!$user) {
-            return $server->push($request->fd, json_encode(['type' => 'token expire']));
+            return $server->push($request->fd, json_encode(['type' => 'tokenExpired']));
         }
 
         // 绑定 user_id 与 fd 关系

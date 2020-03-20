@@ -18,7 +18,7 @@ class WebSocketParser implements ParserInterface
     {
         $data = json_decode($raw, true);
         if (!is_array($data)) {
-            // 数据格式错误
+            // TODO 数据格式错误
         }
 
         $eventMap = [
@@ -26,7 +26,7 @@ class WebSocketParser implements ParserInterface
         ];
 
         $caller = new Caller();
-        $caller->setControllerClass($eventMap[$data['class'] ?? Index::class]);
+        $caller->setControllerClass($eventMap[$data['class'] ?? 'index']);
         $caller->setAction($data['type'] ?? 'index');
         $caller->setArgs($data);
 

@@ -121,7 +121,7 @@
                     }, 1000);
                     break;
                 //token过期
-                case "token_expire":
+                case "tokenExpired":
                     window.location.reload();
                     break;
                 //加群提醒

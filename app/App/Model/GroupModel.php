@@ -10,5 +10,5 @@ namespace App\Model;
 
 class GroupModel extends BaseModel
 {
-    protected $tableName = 'group';
+    protected $tableName = '`group`';
 }

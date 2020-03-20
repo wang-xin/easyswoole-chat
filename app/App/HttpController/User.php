@@ -11,6 +11,8 @@ namespace App\HttpController;
 use App\Model\FriendGroupModel;
 use App\Model\FriendModel;
 use App\Model\GroupMemberModel;
+use App\Model\GroupModel;
+use App\Model\SystemMessageModel;
 use App\Model\UserModel;
 use EasySwoole\Pool\Manager;
 
@@ -70,6 +72,12 @@ class User extends Base
         return $this->writeJson(0, 'success', $data);
     }
 
+    /**
+     * 查找好友，查找群
+     * @throws \EasySwoole\ORM\Exception\Exception
+     * @throws \Throwable
+     * @author King
+     */
     public function find()
     {
         $params  = $this->request()->getRequestParam();
@@ -79,14 +87,11 @@ class User extends Base
         $userList = $groupList = [];
         switch ($type) {
             case 'user':
-                $userList = UserModel::create()->field('id,nickname,avatar')->where('id', '%' . $keyword . '%')->all();
+                $userList = UserModel::create()->field('id,nickname,avatar')->where('id', '%' . $keyword . '%', 'like')->all();
                 break;
             case 'group':
-                $groupList = GroupMemberModel::create()->field('id,groupname,avatar')->where('id', '%' . $keyword . '%')->all();
+                $groupList = GroupModel::create()->field('id,groupname,avatar')->where('id', '%' . $keyword . '%', 'like')->all();
                 break;
-            default:
-                // error
-                // return $this->writeJson(10001, '参数错误');
         }
 
         return $this->render('find', [
@@ -95,5 +100,32 @@ class User extends Base
             'user_list'  => $userList,
             'group_list' => $groupList,
         ]);
+    }
+
+    public function addFriend()
+    {
+        $params = $this->request()->getRequestParam();
+        $token  = $params['token'];
+        $id     = $params['id'];
+
+        $redis = Manager::getInstance()->get('Redis')->getObj();
+        $user  = $redis->get('User_token_' . $token);
+        Manager::getInstance()->get('Redis')->recycleObj($redis);
+
+        $user = json_decode($user, true);
+        if (!$user) {
+            return $this->writeJson(10001, '获取用户信息失败');
+        }
+
+        $systemMessage = SystemMessageModel::create()->where('id', $id)->get();
+        $isFriend      = FriendModel::create()->where('user_id', $user['id'])->where('friend_id', $systemMessage['user_id'])->get();
+        if ($isFriend) {
+            return $this->writeJson(10001, '已经是好友了');
+        }
+    }
+
+    public function messageBox()
+    {
+        
     }
 }
