@@ -55,6 +55,13 @@ CREATE TABLE `friend_group`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '好友分组表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of friend_group
+-- ----------------------------
+INSERT INTO `friend_group` (`id`, `user_id`, `groupname`) VALUES (1, 10013, '默认分组');
+INSERT INTO `friend_group` (`id`, `user_id`, `groupname`) VALUES (2, 10014, '默认分组');
+INSERT INTO `friend_group` (`id`, `user_id`, `groupname`) VALUES (3, 10015, '默认分组');
+
+-- ----------------------------
 -- Table structure for group
 -- ----------------------------
 DROP TABLE IF EXISTS `group`;
@@ -124,7 +131,7 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (10013, '/Static/upload/5d09c6a5b6def15337177846531748ac16fb.jpg', 'AAA', 'test01', '$2y$10$cS3rfhqaHeOfVfkAFd1MnuzslrWhihLP/awA07hQPOfUqixV0yp1q', '接受失败,但不选择放弃。 ', 'online');
+INSERT INTO `user` VALUES (10013, '/Static/upload/5d09c6a5b6def15337177846531748ac16fb.jpg', 'AAA', 'test01', '$2y$10$cS3rfhqaHeOfVfkAFd1MnuzslrWhihLP/awA07hQPOfUqixV0yp1q', '接受失败,但不选择放弃。 ', 'offline');
 INSERT INTO `user` VALUES (10014, '/Static/upload/5d09c7da7bc97tx20218.jpg', 'BBB', 'test02', '$2y$10$m.4h0u0L56G2Oje6ZnNMyulR.9DMvPT4VkXo2RcTHr8NEqVa.cq8C', ' 胸无大志,枉活一世。', 'offline');
 INSERT INTO `user` VALUES (10015, '/Static/upload/5d09ceac4de6312262La2-0.jpg', 'CCC', 'test03', '$2y$10$ueMA2hy8x.Tan3nxZlpCmugUcViGCaV/cAeA4V5YX.yU.1kCtAtzq', '忘掉失败,不过要牢记失败中的教训。', 'offline');
 
