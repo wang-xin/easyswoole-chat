@@ -50,7 +50,7 @@ class EasySwooleEvent implements Event
         $dispatch = new Dispatcher($socketConfig);
         // 给 server 注册相关事件 在 WebSocket 模式下  on message 事件必须注册 并且交给 Dispatcher 对象处理
         $register->set(EventRegister::onMessage, function (\swoole_websocket_server $server, \swoole_websocket_frame $frame) use ($dispatch) {
-            $dispatch->dispatch($server, $frame->data, $frame);
+            $dispatch->dispatch($server, $frame->data);
         });
         // 注册服务事件
         $register->add(EventRegister::onOpen, [WebSocketEvents::class, 'onOpen']);
