@@ -70,7 +70,7 @@
                 , icon: '&#xe64e;' //工具图标，参考图标文档
             }]
             , msgbox: '/User/messageBox?token=' + storage.getItem('token')  //消息盒子页面地址，若不开启，剔除该项即可
-            , find: '/User/find'//发现页面地址，若不开启，剔除该项即可
+            , find: '/User/find?token=' + storage.getItem('token')//发现页面地址，若不开启，剔除该项即可
             , chatLog: '/User/chatLog' //聊天记录页面地址，若不开启，剔除该项即可
         });
         //监听自定义工具栏点击，以添加代码为例

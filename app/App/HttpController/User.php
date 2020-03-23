@@ -21,11 +21,10 @@ class User extends Base
 {
     protected $user;
 
-    public function __construct()
+    protected function onRequest(?string $action): ?bool
     {
-        parent::__construct();
-
         $token = $this->request()->getRequestParam('token');
+
         $redis = Manager::getInstance()->get('Redis')->getObj();
         $user  = $redis->get('User_token_' . $token);
         Manager::getInstance()->get('Redis')->recycleObj($redis);
@@ -34,6 +33,8 @@ class User extends Base
         if (!$this->user) {
             return $this->writeJson(10001, '获取用户信息失败');
         }
+
+        return true;
     }
 
     public function userInfo()
@@ -56,7 +57,7 @@ class User extends Base
                 // 小组里面的好友
                 $friendGroups[$k]['list'] = FriendModel::create()->alias('f')
                     ->field('u.nickname as username,u.id,u.avatar,u.sign,u.status')
-                    ->join('user as u', 'u.id = f.user_id')
+                    ->join('user as u', 'u.id = f.friend_id')
                     ->where('f.user_id', $this->user['id'])
                     ->where('f.friend_group_id', $v['id'])
                     ->order('status', 'desc')
@@ -94,7 +95,10 @@ class User extends Base
         $userList = $groupList = [];
         switch ($type) {
             case 'user':
-                $userList = UserModel::create()->field('id,nickname,avatar')->where('id', '%' . $keyword . '%', 'like')->all();
+                $userList = UserModel::create()->field('id,nickname,avatar')
+                    ->where('id', $this->user['id'], '<>')
+                    ->where('id', '%' . $keyword . '%', 'like')
+                    ->all();
                 break;
             case 'group':
                 $groupList = GroupModel::create()->field('id,groupname,avatar')->where('id', '%' . $keyword . '%', 'like')->all();
@@ -269,7 +273,6 @@ class User extends Base
         $result            = SystemMessageModel::create()->data($systemMessageData)->save();
 
         if ($res && $result) {
-
             // 提交事务
             DbManager::getInstance()->commit();
 

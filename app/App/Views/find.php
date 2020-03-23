@@ -99,12 +99,15 @@
 
     function findUser() {
         wd = $('#user-wd').val();
-        window.location.href = "/User/find?type=user&wd=" + wd
+        token = storage.getItem('token');
+        console.log('token' + token)
+        window.location.href = "/User/find?token=" + token + "&type=user&wd=" + wd
     }
 
     function findGroup() {
         wd = $('#group-wd').val();
-        window.location.href = "/User/find?type=group&wd=" + wd
+        token = storage.getItem('token');
+        window.location.href = "/User/find?token=" + token + "&type=group&wd=" + wd
     }
 
     function addFriend(id, nickname, avatar) {
@@ -120,8 +123,8 @@
                         to_friend_group_id: group,
                         remark: remark,
                         token: storage.getItem('token')
-                    }
-                    parent.sendMessage(parent.socket, JSON.stringify(data))
+                    };
+                    parent.sendMessage(parent.socket, JSON.stringify(data));
                     console.log(group); //获取选择的好友分组ID，若为添加群，则不返回值
                     console.log(remark); //获取附加信息
                     layer.close(index); //关闭改面板
@@ -137,10 +140,10 @@
             data: {groupid: id, token: storage.getItem('token')},
             dataType: "json",
             success: function (res) {
-                console.log(res)
+                console.log(res);
                 if (res.code == 200) {
                     layer.msg(res.msg)
-                    parent.layui.layim.addList(res.data)
+                    parent.layui.layim.addList(res.data);
                     //加入群成功，给群内所有在线用户发送入群通知
                     var joinNotify = {type: "joinNotify", "groupid": id, token: storage.getItem('token')}
                     parent.sendMessage(parent.socket, JSON.stringify(joinNotify));

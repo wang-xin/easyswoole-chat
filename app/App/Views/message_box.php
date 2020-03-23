@@ -122,10 +122,12 @@
     });
 
     function refuse(id, obj) {
+        var storage = window.localStorage;
+
         $.ajax({
             url: "/User/refuseFriend",
             type: "post",
-            data: {id: id},
+            data: {id: id, token: storage.getItem('token')},
             dataType: "json",
             success: function (res) {
                 if (res.code == 200) {
