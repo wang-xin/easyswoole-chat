@@ -20,11 +20,29 @@ class Index extends Controller
 {
     public function chatMessage()
     {
+        $info = $this->caller()->getArgs()['data'];
+
+        $token = $info['token'];
+        $redis = Manager::getInstance()->get('Redis')->getObj();
+        $user  = $redis->get('User_token_' . $token);
+        Manager::getInstance()->get('Redis')->recycleObj($redis);
+
+        $user = json_decode($user, true);
+        if (!$user) {
+            $data = [
+                'type' => 'tokenExpired'
+            ];
+            $this->response()->setMessage(json_encode($data));
+
+            return;
+        }
+
 
     }
 
     /**
-     * addFriend
+     * 添加好友
+     *
      * @throws \EasySwoole\Mysqli\Exception\Exception
      * @throws \EasySwoole\ORM\Exception\Exception
      * @throws \Throwable
@@ -103,8 +121,34 @@ class Index extends Controller
         $server->push($fd, json_encode($data));
     }
 
+    /**
+     * 拒绝用户添加
+     *
+     * @throws \EasySwoole\Mysqli\Exception\Exception
+     * @throws \EasySwoole\ORM\Exception\Exception
+     * @throws \Throwable
+     * @author King
+     */
     public function refuseFriend()
     {
+        $info = $this->caller()->getArgs();
 
+        $systemMessageId = $info['id'];
+        $systemMessage   = SystemMessageModel::create()->where('id', $systemMessageId)->get();
+        if (!$systemMessage) {
+            // TODO 错误处理
+        }
+
+        // 查询被拒绝的人有多少条未读信息
+        $count = SystemMessageModel::create()->where('user_id', $systemMessage['from_id'])->where('read', 0)->count();
+        $data  = [
+            'type'  => 'msgBox',
+            'count' => $count
+        ];
+
+        $fd = Cache::getInstance()->get('uid_' . $systemMessage['from_id']);
+        if ($fd) {
+            ServerManager::getInstance()->getSwooleServer()->push($fd, json_encode($data));
+        }
     }
 }
