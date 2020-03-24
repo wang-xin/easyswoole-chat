@@ -135,7 +135,7 @@ class User extends Base
     public function messageBox()
     {
         // 系统消息标记已读
-        SystemMessageModel::create()->where('user_id', $this->user['id'])->update(['read' => 1]);
+        SystemMessageModel::create()->update(['read' => 1], ['user_id' => $this->user['id']]);
 
         $list = SystemMessageModel::create()->alias('sm')
             ->join('user as u', 'sm.user_id = u.id')
@@ -224,7 +224,7 @@ class User extends Base
         FriendModel::create()->saveAll($friendData);
 
         // 系统消息标记已同意
-        SystemMessageModel::create()->where('id', $systemMessageId)->update(['status' => 1]);
+        SystemMessageModel::create()->update(['status' => 1], ['id' => $systemMessageId]);
 
         $systemMessageData = [
             'user_id' => $systemMessage['from_id'],
@@ -270,7 +270,7 @@ class User extends Base
         DbManager::getInstance()->startTransaction();
 
         // 标记已拒绝
-        $res = SystemMessageModel::create()->where('id', $systemMessageId)->update(['status' => 2]);
+        $res = SystemMessageModel::create()->update(['status' => 2], ['id' => $systemMessageId]);
 
         // 给申请添加这发送一条拒绝的系统消息
         $systemMessageData = [

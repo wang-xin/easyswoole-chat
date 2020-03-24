@@ -17,6 +17,18 @@ use EasySwoole\Pool\Manager;
 
 class WebSocketEvents
 {
+    /**
+     * onOpen
+     *
+     * @param \swoole_websocket_server $server
+     * @param \swoole_http_request     $request
+     *
+     * @return mixed
+     * @throws \EasySwoole\ORM\Exception\Exception
+     * @throws \Throwable
+     * @throws \EasySwoole\Mysqli\Exception\Exception
+     * @author King
+     */
     public static function onOpen(\swoole_websocket_server $server, \swoole_http_request $request)
     {
         $token = $request->get['token'];
@@ -35,7 +47,7 @@ class WebSocketEvents
         Cache::getInstance()->set('fd_' . $request->fd, $user['id'], 3600);
 
         // 更新个人在线状态
-        UserModel::create()->where('id', $user['id'])->update(['status' => 'online']);
+        UserModel::create()->update(['status' => 'online'], ['id' => $user['id']]);
 
         $data = [
             'type'   => 'friendStatus',
@@ -64,14 +76,28 @@ class WebSocketEvents
         $offlineMessage = OfflineMessageModel::create()->where('user_id', $user['id'])->where('status', 0)->all();
         if ($offlineMessage) {
             foreach ($offlineMessage as $item) {
-                $server->push($request->fd, json_encode($item['data']));
+                $item = $item->toArray();   // 对象转数组
+
+                $server->push($request->fd, $item['data']);
 
                 // 标记已读
-                OfflineMessageModel::create()->where('id', $item['id'])->update(['status' => 1]);
+                OfflineMessageModel::create()->update(['status' => 1], ['id' => $item['id']]);
             }
         }
     }
 
+    /**
+     * 关闭连接
+     *
+     * @param \swoole_websocket_server $server
+     * @param int                      $fd
+     * @param int                      $reactorId
+     *
+     * @throws \EasySwoole\Mysqli\Exception\Exception
+     * @throws \EasySwoole\ORM\Exception\Exception
+     * @throws \Throwable
+     * @author King
+     */
     public static function onClose(\swoole_websocket_server $server, int $fd, int $reactorId)
     {
         $uid = Cache::getInstance()->get('fd_' . $fd);
@@ -84,6 +110,8 @@ class WebSocketEvents
         // 所有好友列表
         $friend = FriendModel::create()->where('user_id', $uid)->all();
         foreach ($friend as $item) {
+            $item = $item->toArray();   // 对象转数组
+
             // 将下线状态通知在线的好友
             $friendFd = Cache::getInstance()->get('uid_' . $item['friend_id']);
             if ($friendFd) {
@@ -96,6 +124,6 @@ class WebSocketEvents
         Cache::getInstance()->unset('fd_' . $fd);
 
         // 更新个人在线状态
-        UserModel::create()->where('id', $uid)->update(['status' => 'offline']);
+        UserModel::create()->update(['status' => 'offline'], ['id' => $uid]);
     }
 }
