@@ -8,6 +8,7 @@
 
 namespace App\HttpController;
 
+use App\Model\ChatRecordModel;
 use App\Model\FriendGroupModel;
 use App\Model\FriendModel;
 use App\Model\GroupMemberModel;
@@ -23,6 +24,15 @@ class User extends Base
 
     protected function onRequest(?string $action): ?bool
     {
+        $notValidateTokenArr = [
+            ['method' => 'GET', 'action' => 'chatLog']
+        ];
+        foreach ($notValidateTokenArr as $item) {
+            if ($this->request()->getMethod() == $item['method'] && $action == $item['action']) {
+                return true;
+            }
+        }
+
         $token = $this->request()->getRequestParam('token');
 
         $redis = Manager::getInstance()->get('Redis')->getObj();
@@ -283,5 +293,37 @@ class User extends Base
         DbManager::getInstance()->rollback();
 
         return $this->writeJson(10001, '操作失败');
+    }
+
+    public function chatLog()
+    {
+        $params = $this->request()->getRequestParam();
+
+        if ($this->request()->getMethod() !== 'POST') {
+            return $this->render('chat_log', [
+                'id'   => $params['id'],
+                'type' => $params['type'],
+            ]);
+        }
+
+        // $page = (int)$params['page'] ?? 1;
+
+        if ($params['type'] == 'friend') {
+            $list = ChatRecordModel::create()->alias('cr')
+                ->field('u.nickname as username,u.id,u.avatar,time as timestamp,cr.content')
+                ->join('user as u', 'cr.user_id = u.id')
+                ->where('( cr.friend_id = ' . (int)$params['id'] . ' AND cr.user_id = ' . $this->user['id'] . ' ) OR ( cr.friend_id = ' . $this->user['id'] . ' AND cr.user_id = ' . (int)$params['id'] . ' )')
+                ->order('time', 'ASC')
+                ->all();
+        } else {
+            $list = [];
+        }
+
+        foreach ($list as $k => $v) {
+            $list[$k]['timestamp'] = $v['timestamp'] * 1000;
+            $list[$k]['content']   = json_decode($v['content'])->content;
+        }
+
+        return $this->writeJson(200, 'success', ['data' => $list/*, 'last_page' => 10*/]);
     }
 }

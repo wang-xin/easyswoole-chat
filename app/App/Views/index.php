@@ -89,7 +89,7 @@
             switch (data.type) {
                 case "friend":
                 case "group":
-                    console.log(data)
+                    console.log(data);
                     layim.getMessage(data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
                     break;
                 //单纯的弹出
@@ -103,12 +103,12 @@
                     break;
                 //将新好友添加到列表
                 case "addList":
-                    console.log(data.data)
+                    console.log(data.data);
                     layim.addList(data.data);
                     break;
                 //好友上下线变更
                 case "friendStatus" :
-                    console.log(data.status)
+                    console.log(data.status);
                     layim.setFriendStatus(data.uid, data.status);
                     break;
                 //消息盒子
