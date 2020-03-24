@@ -107,7 +107,7 @@ class User extends Base
             case 'user':
                 $userList = UserModel::create()->field('id,nickname,avatar')
                     ->where('id', $this->user['id'], '<>')
-                    ->where('id', '%' . $keyword . '%', 'like')
+                    ->where(" (id LIKE '%{$keyword}%' OR nickname LIKE '%{$keyword}%') ")
                     ->all();
                 break;
             case 'group':
