@@ -26,7 +26,7 @@ CREATE TABLE `chat_record`  (
   `user_id` int(11) NOT NULL,
   `friend_id` int(11) NOT NULL DEFAULT 0 COMMENT '是群聊消息记录的话 此id为0',
   `group_id` int(11) NOT NULL DEFAULT 0 COMMENT '如果不为0说明是群聊',
-  `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `time` int(11) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '聊天记录' ROW_FORMAT = Dynamic;
