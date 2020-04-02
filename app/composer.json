@@ -8,7 +8,9 @@
         "league/plates": "^3.3",
         "easyswoole/socket": "^1.1",
         "easyswoole/redis-pool": "^2.1",
-        "easyswoole/orm": "^1.4"
+        "easyswoole/orm": "^1.4",
+        "easyswoole/fast-cache": "^1.3",
+        "easyswoole/verifycode": "^3.0"
     },
     "autoload": {
         "psr-4": {
